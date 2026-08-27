@@ -1,0 +1,16 @@
+{
+    "company": "TCS",
+    "ticker": "TCS.NS",
+    "current_price": 2313.2,
+    "trend": "NEUTRAL",
+    "momentum": "MODERATE POSITIVE",
+    "rsi": 43.46,
+    "volatility": 2.31,
+    "risk_score": 75,
+    "risk_level": "HIGH",
+    "sentiment": "NEGATIVE",
+    "sentiment_score": -0.5148,
+    "overall_score": 34.81,
+    "outlook": "NEGATIVE",
+    "ai_insight": "TCS is showing mixed technical signals. Recent financial news sentiment is negative. Market volatility indicates elevated risk."
+}
