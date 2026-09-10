@@ -42,7 +42,7 @@ BASE_DIR = os.path.dirname(
 DATA_FILE = os.path.join(
     BASE_DIR,
     "data",
-    "final_analysis.json"
+    "unified_analysis.json"
 )
 
 
@@ -82,7 +82,7 @@ def get_tcs_analysis():
 
         raise HTTPException(
             status_code=404,
-            detail="Analysis data not found. Run final_analysis.py first."
+            detail="Analysis data not found. Run unified_analysis.py first."
         )
 
     try:

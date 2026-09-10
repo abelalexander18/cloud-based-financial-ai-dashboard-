@@ -1,6 +1,7 @@
-import pandas as pd
+import json
+
 import numpy as np
-import yfinance as yf
+import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -11,26 +12,31 @@ from sklearn.metrics import (
 
 
 # =========================================================
-# 1. DOWNLOAD TCS DATA
+# 1. LOAD EXISTING TCS DATA
 # =========================================================
 
-ticker = "TCS.NS"
+data = pd.read_csv("data/processed_market_data.csv")
 
-data = yf.download(
-    ticker,
-    start="2020-01-01",
-    end="2026-08-18",
-    auto_adjust=False
-)
+data["Date"] = pd.to_datetime(data["Date"])
+data = data.sort_values("Date")
+data = data.set_index("Date")
 
-# Keep required columns
-data = data[["Close", "Volume"]].copy()
-
-# Handle yfinance MultiIndex
-if isinstance(data.columns, pd.MultiIndex):
-    data.columns = data.columns.get_level_values(0)
-
-data.dropna(inplace=True)
+# Keep the columns needed for the model
+data = data[
+    [
+        "Close",
+        "Volume",
+        "Daily_Return",
+        "MA_7",
+        "MA_30",
+        "EMA_12",
+        "EMA_26",
+        "MACD",
+        "MACD_Signal",
+        "RSI",
+        "Volatility"
+    ]
+].copy()
 
 
 # =========================================================
@@ -69,6 +75,25 @@ data["EMA_12"] = (
 
 data["EMA_26"] = (
     data["Close"].ewm(span=26, adjust=False).mean()
+)
+
+
+# ---------- Relative trend features ----------
+
+data["MA_Ratio"] = (
+    data["MA_7"] / data["MA_30"]
+)
+
+data["Close_MA7_Ratio"] = (
+    data["Close"] / data["MA_7"]
+)
+
+data["Close_MA30_Ratio"] = (
+    data["Close"] / data["MA_30"]
+)
+
+data["EMA_Ratio"] = (
+    data["EMA_12"] / data["EMA_26"]
 )
 
 
@@ -171,39 +196,23 @@ data["Relative_Volume"] = (
 # =========================================================
 
 data["Future_Return"] = (
-    data["Close"].shift(-1) /
-    data["Close"] - 1
+    data["Close"].shift(-1)
+    /
+    data["Close"]
+    - 1
 )
 
 
 # =========================================================
-# 9. CREATE 3-CLASS TARGET
+# 9. CREATE BINARY DIRECTION TARGET
 # =========================================================
 
-# Threshold = 0.3%
-#
-# Future return > +0.3%  -> UP
-# Future return < -0.3%  -> DOWN
-# Otherwise              -> NEUTRAL
-
-threshold = 0.003
-
-data["Target"] = 1
-
-data.loc[
-    data["Future_Return"] > threshold,
-    "Target"
-] = 2
-
-data.loc[
-    data["Future_Return"] < -threshold,
-    "Target"
-] = 0
-
-
 # 0 = DOWN
-# 1 = NEUTRAL
-# 2 = UP
+# 1 = UP
+
+data["Target"] = (
+    data["Future_Return"] > 0
+).astype(int)
 
 
 # =========================================================
@@ -216,7 +225,12 @@ data.replace(
     inplace=True
 )
 
-data.dropna(inplace=True)
+# Keep the complete market data for the latest prediction
+latest_data = data.copy()
+
+# Training data must only contain rows
+# where the future return is known
+training_data = data.dropna().copy()
 
 
 # =========================================================
@@ -224,39 +238,30 @@ data.dropna(inplace=True)
 # =========================================================
 
 features = [
-    "Close",
-    "Volume",
     "Daily_Return",
     "Return_5D",
     "Return_20D",
-    "MA_7",
-    "MA_30",
-    "EMA_12",
-    "EMA_26",
     "MACD",
     "MACD_Signal",
     "MACD_Histogram",
     "RSI",
-    "BB_Middle",
-    "BB_Upper",
-    "BB_Lower",
     "BB_Position",
     "Volatility_7",
     "Volatility_20",
-    "Volume_MA_20",
     "Relative_Volume"
 ]
 
-X = data[features]
-
-y = data["Target"]
+X = training_data[features]
+y = training_data["Target"]
 
 
 # =========================================================
 # 12. CHRONOLOGICAL TRAIN / TEST SPLIT
 # =========================================================
 
-split_index = int(len(data) * 0.80)
+split_index = int(
+    len(training_data) * 0.80
+)
 
 X_train = X.iloc[:split_index]
 X_test = X.iloc[split_index:]
@@ -269,9 +274,20 @@ print("\n==========================================")
 print("TCS DIRECTION MODEL V2")
 print("==========================================")
 
-print("Total observations:", len(data))
-print("Training observations:", len(X_train))
-print("Testing observations:", len(X_test))
+print(
+    "Total observations:",
+    len(training_data)
+)
+
+print(
+    "Training observations:",
+    len(X_train)
+)
+
+print(
+    "Testing observations:",
+    len(X_test)
+)
 
 
 # =========================================================
@@ -286,8 +302,7 @@ print(
     .rename(
         index={
             0: "DOWN",
-            1: "NEUTRAL",
-            2: "UP"
+            1: "UP"
         }
     )
 )
@@ -303,7 +318,7 @@ model = RandomForestClassifier(
     min_samples_leaf=5,
     random_state=42,
     n_jobs=-1,
-    class_weight="balanced"
+    class_weight=None
 )
 
 model.fit(
@@ -342,11 +357,7 @@ print(
     classification_report(
         y_test,
         predicted,
-        target_names=[
-            "DOWN",
-            "NEUTRAL",
-            "UP"
-        ],
+        target_names=["DOWN", "UP"],
         zero_division=0
     )
 )
@@ -362,7 +373,6 @@ cm = confusion_matrix(
 )
 
 print("Confusion Matrix:")
-
 print(cm)
 
 
@@ -370,10 +380,12 @@ print(cm)
 # 18. FEATURE IMPORTANCE
 # =========================================================
 
-importance = pd.DataFrame({
-    "Feature": features,
-    "Importance": model.feature_importances_
-})
+importance = pd.DataFrame(
+    {
+        "Feature": features,
+        "Importance": model.feature_importances_
+    }
+)
 
 importance = importance.sort_values(
     "Importance",
@@ -385,9 +397,7 @@ print("FEATURE IMPORTANCE")
 print("==========================================")
 
 print(
-    importance.to_string(
-        index=False
-    )
+    importance.to_string(index=False)
 )
 
 
@@ -395,7 +405,7 @@ print(
 # 19. LATEST PREDICTION
 # =========================================================
 
-latest = X.iloc[[-1]]
+latest = latest_data[features].iloc[[-1]]
 
 prediction = model.predict(
     latest
@@ -407,8 +417,7 @@ probabilities = model.predict_proba(
 
 labels = {
     0: "DOWN",
-    1: "NEUTRAL",
-    2: "UP"
+    1: "UP"
 }
 
 direction = labels[prediction]
@@ -434,11 +443,54 @@ print(
 )
 
 print(
-    f"NEUTRAL Probability: {probabilities[1] * 100:.2f}%"
-)
-
-print(
-    f"UP Probability: {probabilities[2] * 100:.2f}%"
+    f"UP Probability: {probabilities[1] * 100:.2f}%"
 )
 
 print("==========================================")
+
+
+# =========================================================
+# 20. SAVE LATEST PREDICTION
+# =========================================================
+
+latest_prediction = {
+    "model": "Random Forest Direction Model V2",
+    "prediction_date": str(
+        latest_data.index[-1].date()
+    ),
+    "direction": direction,
+    "confidence": round(
+        float(confidence),
+        4
+    ),
+    "down_probability": round(
+        float(probabilities[0]),
+        4
+    ),
+    "up_probability": round(
+        float(probabilities[1]),
+        4
+    ),
+    "validation_accuracy": round(
+        float(accuracy),
+        4
+    )
+}
+
+with open(
+    "data/direction_latest_prediction.json",
+    "w"
+) as file:
+    json.dump(
+        latest_prediction,
+        file,
+        indent=4
+    )
+
+print(
+    "\nLatest direction prediction saved to:"
+)
+
+print(
+    "data/direction_latest_prediction.json"
+)

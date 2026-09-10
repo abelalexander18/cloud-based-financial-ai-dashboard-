@@ -1,0 +1,8 @@
+{
+    "model": "Random Forest",
+    "prediction_date": "2026-08-17",
+    "latest_price": 2313.2,
+    "predicted_return": 0.000312,
+    "predicted_next_day_price": 2313.92,
+    "validation_mape": 1.2
+}

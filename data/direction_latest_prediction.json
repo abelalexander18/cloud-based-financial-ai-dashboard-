@@ -1,0 +1,9 @@
+{
+    "model": "Random Forest Direction Model V2",
+    "prediction_date": "2026-08-17",
+    "direction": "DOWN",
+    "confidence": 0.5626,
+    "down_probability": 0.5626,
+    "up_probability": 0.4374,
+    "validation_accuracy": 0.4921
+}
