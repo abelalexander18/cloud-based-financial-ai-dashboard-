@@ -36,78 +36,108 @@
     "news": {
         "articles": [
             {
+                "title": "Infosys shares extend losing streak to sixth straight session, losing \u20b940,000 crore in market cap",
+                "source": "CNBC TV18",
+                "published": "2026-09-09T09:37:13Z",
+                "url": "https://www.cnbctv18.com/market/infosys-share-price-sixth-straight-day-of-fall-market-cap-loss-over-40000-crore-buy-sell-target-19987404.htm",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.97,
+                "sentiment_score": -0.97
+            },
+            {
+                "title": "Indian IT stocks led by Infosys, TCS, lose over \u20b91 lakh crore in market cap this week so far",
+                "source": "CNBC TV18",
+                "published": "2026-09-09T07:15:30Z",
+                "url": "https://www.cnbctv18.com/market/it-stocks-infosys-tcs-hcltech-coforge-wipro-share-price-1-lakh-crore-market-cap-loss-key-factors-explained-19987250.htm",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.9723,
+                "sentiment_score": -0.9723
+            },
+            {
+                "title": "Infosys, TCS, Coforge, Mphasis shares: Targets as Amazon, Google, Microsoft ramp up capex",
+                "source": "Business Today",
+                "published": "2026-09-09T05:24:10Z",
+                "url": "https://www.businesstoday.in/markets/stocks/story/infosys-tcs-coforge-mphasis-shares-targets-as-amazon-google-microsoft-ramp-up-capex-554164-2026-09-09",
+                "sentiment": "NEUTRAL",
+                "confidence": 0.7751,
+                "sentiment_score": 0.0
+            },
+            {
+                "title": "IT shares fall for 6th straight session; Coforge, Infosys, TCS fall up to 6%",
+                "source": "Moneycontrol",
+                "published": "2026-09-09T04:42:36Z",
+                "url": "https://www.moneycontrol.com/news/business/markets/it-shares-fall-for-6th-straight-session-coforge-infosys-tcs-fall-up-to-6-14025832.html",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.9687,
+                "sentiment_score": -0.9687
+            },
+            {
+                "title": "Why stock market is down today? Sensex plunges 600 points, Nifty below 23,500. 6 key triggers behind D-Street selloff",
+                "source": "The Economic Times",
+                "published": "2026-09-09T04:09:00Z",
+                "url": "https://economictimes.indiatimes.com/markets/stocks/news/why-stock-market-is-down-today-sensex-plunges-600-points-nifty-below-23500-6-key-triggers-behind-d-street-selloff/articleshow/133951578.cms",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.9384,
+                "sentiment_score": -0.9384
+            },
+            {
+                "title": "Top stocks in focus today: Investors must watch Innovision, TCS, Bank of Baroda shares on Wed, 9 Sept",
+                "source": "Livemint",
+                "published": "2026-09-08T18:30:19Z",
+                "url": "https://www.livemint.com/market/stock-market-news/top-stocks-in-focus-today-investors-must-watch-innovision-tcs-bank-of-baroda-shares-on-wed-9-sept-triggers-11788875139167.html",
+                "sentiment": "NEUTRAL",
+                "confidence": 0.9407,
+                "sentiment_score": 0.0
+            },
+            {
                 "title": "Tejas Networks stock forms strong bullish candles; Axis Direct shares buy range, stop-loss, upside, holding period",
                 "source": "Livemint",
                 "published": "2026-09-08T07:03:08Z",
-                "url": "https://www.livemint.com/market/stock-market-news/tejas-networks-stock-forms-strong-bullish-candles-axis-direct-shares-buy-range-stop-loss-upside-holding-period-11788849830807.html"
+                "url": "https://www.livemint.com/market/stock-market-news/tejas-networks-stock-forms-strong-bullish-candles-axis-direct-shares-buy-range-stop-loss-upside-holding-period-11788849830807.html",
+                "sentiment": "POSITIVE",
+                "confidence": 0.7986,
+                "sentiment_score": 0.7986
             },
             {
                 "title": "TCS shares: JM Financial meets management; here's what it says",
                 "source": "Business Today",
                 "published": "2026-09-08T04:23:10Z",
-                "url": "https://www.businesstoday.in/markets/stocks/story/tcs-shares-jm-financial-meets-management-heres-what-it-says-553830-2026-09-08"
+                "url": "https://www.businesstoday.in/markets/stocks/story/tcs-shares-jm-financial-meets-management-heres-what-it-says-553830-2026-09-08",
+                "sentiment": "NEUTRAL",
+                "confidence": 0.9434,
+                "sentiment_score": 0.0
             },
             {
                 "title": "8 September, 2026 Stock Market Updates: Sensex slips 162 points, Nifty around 23,700, TCS drops over 1%",
                 "source": "India TV News",
                 "published": "2026-09-08T03:59:42Z",
-                "url": "https://www.indiatvnews.com/business/markets/8-september-2026-stock-market-updates-sensex-slips-162-points-nifty-around-23-700-tcs-drops-over-1-pc-2026-09-08-1053618"
+                "url": "https://www.indiatvnews.com/business/markets/8-september-2026-stock-market-updates-sensex-slips-162-points-nifty-around-23-700-tcs-drops-over-1-pc-2026-09-08-1053618",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.9653,
+                "sentiment_score": -0.9653
             },
             {
                 "title": "TCS falls 1% as JM Fin expects macro pressures to stay; stock down 30% YTD",
                 "source": "Business Standard",
                 "published": "2026-09-08T03:58:22Z",
-                "url": "https://www.business-standard.com/markets/news/tcs-falls-1-as-jm-fin-expects-macro-pressures-to-stay-stock-down-30-ytd-126090800151_1.html"
-            },
-            {
-                "title": "native creative engineering studio in London",
-                "source": "The Tribune",
-                "published": "2026-09-07T08:47:39Z",
-                "url": "https://www.tribuneindia.com/news/business/tcs-launches-4500-square-ft-ai-native-creative-engineering-studio-in-london/"
-            },
-            {
-                "title": "TCS launches 4,500-square-ft AI-native creative engineering studio in London",
-                "source": "ANI (Asian News International)",
-                "published": "2026-09-07T08:43:01Z",
-                "url": "https://www.aninews.in/news/business/tcs-launches-4500-square-ft-ai-native-creative-engineering-studio-in-london20260907141301/"
-            },
-            {
-                "title": "\u20b949 lakh crore market-cap wipeout! Are Nifty\u2019s fallen giants bargains or value traps?",
-                "source": "The Economic Times",
-                "published": "2026-08-31T04:21:00Z",
-                "url": "https://economictimes.indiatimes.com/markets/stocks/news/49-lakh-crore-market-cap-wipeout-are-niftys-fallen-giants-bargains-or-value-traps/articleshow/133641295.cms"
-            },
-            {
-                "title": "TCS, Engineers India, SAIL among top stocks to buy; check price targets, upside potential & more",
-                "source": "Business Today",
-                "published": "2026-08-31T03:34:47Z",
-                "url": "https://www.businesstoday.in/markets/stocks/story/tcs-engineers-india-sail-among-top-stocks-to-buy-check-price-targets-upside-potential-more-552132-2026-08-31"
-            },
-            {
-                "title": "TCS to Microsoft: Techie reveals 4 major differences in work culture",
-                "source": "The Indian Express",
-                "published": "2026-08-30T07:13:31Z",
-                "url": "https://indianexpress.com/article/trending/trending-in-india/tcs-to-microsoft-techie-reveals-4-major-differences-in-work-culture-10855600/"
-            },
-            {
-                "title": "\u2018Designed For Humans, Not Employees\u2019: Ex-TCS Employee Shares 'Culture Shift\u2019 He Observed At Microsoft",
-                "source": "Times Now",
-                "published": "2026-08-29T08:57:25Z",
-                "url": "https://www.timesnownews.com/viral/former-tcs-employee-shares-culture-shift-he-observed-in-microsoft-viral-video-article-156007121"
+                "url": "https://www.business-standard.com/markets/news/tcs-falls-1-as-jm-fin-expects-macro-pressures-to-stay-stock-down-30-ytd-126090800151_1.html",
+                "sentiment": "NEGATIVE",
+                "confidence": 0.9709,
+                "sentiment_score": -0.9709
             }
         ]
     },
     "sentiment": {
-        "label": "NEUTRAL",
-        "score": -0.1138
+        "label": "NEGATIVE",
+        "score": -0.4987
     },
     "risk": {
         "score": 75,
         "level": "HIGH"
     },
     "overall": {
-        "score": 39.83,
+        "score": 35.02,
         "outlook": "NEUTRAL",
-        "insight": "TCS is showing mixed technical signals. Recent financial news sentiment is neutral. Volatility indicates elevated market risk."
+        "insight": "TCS is showing mixed technical signals. Recent financial news sentiment is negative. Volatility indicates elevated market risk."
     }
 }

@@ -252,11 +252,8 @@ sentiment_pipeline = pipeline(
 sentiment_scores = []
 
 for article in articles:
-
     headline = article["title"]
-
     result = sentiment_pipeline(headline)[0]
-
     label = result["label"]
     confidence = result["score"]
 
@@ -267,8 +264,12 @@ for article in articles:
     else:
         score = 0
 
-    sentiment_scores.append(score)
+    # Store individual article sentiment results
+    article["sentiment"] = label.upper()
+    article["confidence"] = round(float(confidence), 4)
+    article["sentiment_score"] = round(float(score), 4)
 
+    sentiment_scores.append(score)
 
 if sentiment_scores:
 

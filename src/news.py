@@ -19,7 +19,7 @@ def get_news(company, max_articles=10):
         "apikey": API_KEY
     }
 
-    response = requests.get(url, params=params, timeout=10)
+    response = requests.get(url, params=params, timeout=10, verify=False)
 
     if response.status_code != 200:
         print("News API Error:", response.status_code)
