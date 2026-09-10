@@ -64,7 +64,7 @@ function normalizeAnalysis(payload) {
       trend: market.trend || finalAnalysis.trend,
       trend_score: numberOrNull(market.trend_score),
       momentum: market.momentum || finalAnalysis.momentum,
-      relative_volume: numberOrNull(market.relative_volume),
+      relative_volume: numberOrNull(market.relative_volume ?? payload.relative_volume),
     },
     price_prediction: {
       model: pricePrediction.model || pricePrediction.model_name,
@@ -92,6 +92,9 @@ function normalizeAnalysis(payload) {
     risk: {
       score: numberOrNull(risk.score ?? risk.risk_score ?? finalAnalysis.risk_score),
       level: risk.level || risk.risk_level || finalAnalysis.risk_level,
+      maximum_drawdown: numberOrNull(payload.maximum_drawdown ?? risk.maximum_drawdown),
+      beta: numberOrNull(payload.beta ?? risk.beta),
+      beta_source: payload.beta_source || risk.beta_source,
     },
     overall: {
       score: numberOrNull(finalAnalysis.score ?? finalAnalysis.overall_score ?? payload.overall?.score),
@@ -99,7 +102,12 @@ function normalizeAnalysis(payload) {
       insight: finalAnalysis.insight || finalAnalysis.ai_insight || payload.overall?.insight,
     },
     news: Array.isArray(newsValue) ? newsValue : newsValue.articles || [],
-    history: Array.isArray(payload.history) ? payload.history : null,
+    history: Array.isArray(payload.history)
+      ? payload.history.map((item) => ({
+          date: item.date,
+          price: numberOrNull(item.price ?? item.close_price ?? item.close),
+        }))
+      : null,
     updatedAt: market.date || finalAnalysis.analyzed_at || new Date().toISOString(),
   };
 }

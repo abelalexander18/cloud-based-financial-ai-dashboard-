@@ -8,9 +8,9 @@ import {
   Tooltip,
 } from "recharts";
 
-import { priceHistory } from "../data/mockData";
+function StockChart({ history }) {
+  const chartData = history || [];
 
-function StockChart() {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
       
@@ -46,11 +46,13 @@ function StockChart() {
         </div>
       </div>
 
+      {chartData.length === 1 && <p className="text-xs text-slate-500 mb-4">Limited historical data available.</p>}
+
       {/* Chart */}
       <div className="w-full h-80">
-        <ResponsiveContainer width="100%" height="100%">
+          {chartData.length ? <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={priceHistory}
+            data={chartData}
             margin={{
               top: 10,
               right: 10,
@@ -113,7 +115,7 @@ function StockChart() {
               }}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer> : <p className="text-sm text-slate-500">Limited historical data available.</p>}
       </div>
 
       {/* Chart footer */}

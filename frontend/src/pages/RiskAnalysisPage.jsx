@@ -141,7 +141,7 @@ function RiskAnalysisPage({ analysis, status, error, onRetry }) {
             </p>
 
             <p className="text-2xl font-bold text-white mt-1">
-              Not available
+              {risk.maximum_drawdown === null ? "Not available" : `${risk.maximum_drawdown.toFixed(2)}%`}
             </p>
 
             <p className="text-xs text-slate-500 mt-2">
@@ -162,11 +162,11 @@ function RiskAnalysisPage({ analysis, status, error, onRetry }) {
             </p>
 
             <p className="text-2xl font-bold text-white mt-1">
-              Not available
+              {risk.beta === null ? "Not available" : risk.beta.toFixed(2)}
             </p>
 
             <p className="text-xs text-slate-500 mt-2">
-              Market sensitivity
+              {risk.beta_source || "Market sensitivity"}
             </p>
           </div>
 

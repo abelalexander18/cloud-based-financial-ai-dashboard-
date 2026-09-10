@@ -117,6 +117,14 @@ function MarketAnalysis({ analysis, status, error, onRetry }) {
           </p>
         </div>
 
+        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5">
+          <p className="text-sm text-slate-400">Relative Volume</p>
+          <p className="text-2xl font-bold text-white mt-4">
+            {format(market.relative_volume, { maximumFractionDigits: 2 })}
+          </p>
+          <p className="text-xs text-slate-500 mt-2">Latest volume vs recent average</p>
+        </div>
+
       </div>
 
       {/* Moving averages */}

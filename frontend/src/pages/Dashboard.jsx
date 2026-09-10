@@ -1,4 +1,5 @@
 import { Activity, ExternalLink, Gauge, RefreshCw, ShieldAlert, Sparkles } from "lucide-react";
+import StockChart from "../components/StockChart";
 
 const formatNumber = (value, options = {}) => value === null || value === undefined || Number.isNaN(value) ? "Not available" : Number(value).toLocaleString("en-IN", options);
 const formatPrice = (value) => value === null || value === undefined ? "Not available" : `₹${formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -56,7 +57,7 @@ function Dashboard({ analysis, status, error, onRetry }) {
         <div className="panel"><div className="panel-heading"><div><p className="eyebrow accent-text">News intelligence</p><h2>Market sentiment</h2></div><Badge tone={toneFor(sentiment.label)}>{sentiment.label}</Badge></div><p className="sentiment-score">{sentiment.score === null ? "Not available" : formatNumber(sentiment.score, { maximumFractionDigits: 4 })}</p><p className="panel-copy">FinBERT sentiment score from the latest available news analysis.</p><div className="news-list">{analysis.news.length ? analysis.news.slice(0, 5).map((article, index) => <a className="news-item" href={article.url} target="_blank" rel="noreferrer" key={`${article.url || article.title}-${index}`}><span>{article.title || "Untitled article"}</span><small>{article.source || "News source unavailable"} · {article.published ? new Date(article.published).toLocaleDateString() : "Date unavailable"}<ExternalLink size={13} /></small></a>) : <p className="panel-copy">No news articles available.</p>}</div></div>
       </section>
 
-      <section className="content-grid lower-grid"><div className="panel history-placeholder"><div className="panel-heading"><div><p className="eyebrow accent-text">Price history</p><h2>Historical chart</h2></div></div><p>Historical market data is not included in the current analysis endpoint.</p><small>The chart is ready for the backend history field or a future historical-data endpoint.</small></div><div className="panel"><div className="panel-heading"><div><p className="eyebrow accent-text">Backend interpretation</p><h2>AI insight</h2></div></div><p className="insight-copy">{overall.insight || "No AI insight was provided by the backend."}</p></div></section>
+      <section className="content-grid lower-grid"><StockChart history={analysis.history} /><div className="panel"><div className="panel-heading"><div><p className="eyebrow accent-text">Backend interpretation</p><h2>AI insight</h2></div></div><p className="insight-copy">{overall.insight || "No AI insight was provided by the backend."}</p></div></section>
     </main>
   );
 }
