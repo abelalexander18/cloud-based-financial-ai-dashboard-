@@ -1,0 +1,30 @@
+name: Update Financial Data
+
+on:
+  schedule:
+    # 14:00 UTC is after the Indian market close and normal news availability.
+    - cron: "0 14 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  update-financial-data:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      GNEWS_API_KEY: ${{ secrets.GNEWS_API_KEY }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pipeline dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Run financial data pipeline
+        run: python cloud/run_pipeline.py

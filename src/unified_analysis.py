@@ -15,6 +15,7 @@ DATA_FILE = "data/processed_market_data.csv"
 PRICE_PREDICTION_FILE = "data/random_forest_latest_prediction.json"
 DIRECTION_PREDICTION_FILE = "data/direction_latest_prediction.json"
 OUTPUT_FILE = "data/unified_analysis.json"
+NEWS_CACHE_FILE = os.getenv("PIPELINE_NEWS_FILE")
 
 COMPANY = "TCS"
 TICKER = "TCS.NS"
@@ -233,7 +234,12 @@ print("Direction prediction loaded.")
 
 print("\nFetching financial news...")
 
-articles = get_news(COMPANY, max_articles=10)
+if NEWS_CACHE_FILE and os.path.exists(NEWS_CACHE_FILE):
+    with open(NEWS_CACHE_FILE, "r") as file:
+        articles = json.load(file)
+    print("Loaded news from pipeline cache.")
+else:
+    articles = get_news(COMPANY, max_articles=10)
 
 print("Articles found:", len(articles))
 

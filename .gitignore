@@ -9,3 +9,4 @@ dist/
 /frontend/node_modules/
 /frontend/dist/
 .env.local
+data/latest_news.json

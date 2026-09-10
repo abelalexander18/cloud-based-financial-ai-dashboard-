@@ -3,6 +3,7 @@ import numpy as np
 import yfinance as yf
 import matplotlib.pyplot as plt
 import os
+from datetime import date, timedelta
 
 
 # =========================================================
@@ -14,7 +15,7 @@ ticker = "TCS.NS"
 data = yf.download(
     ticker,
     start="2020-01-01",
-    end="2026-08-18",
+    end=(date.today() + timedelta(days=1)).isoformat(),
     auto_adjust=False
 )
 
