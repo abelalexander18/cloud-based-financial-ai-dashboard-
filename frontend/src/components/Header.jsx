@@ -1,8 +1,8 @@
-import { Bell, Search, ChevronDown } from "lucide-react";
+import { Bell, Search, ChevronDown, RefreshCw } from "lucide-react";
 
-function Header() {
+function Header({ analysis, onRefresh, refreshing }) {
   return (
-    <header className="h-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-8">
+    <header className="app-header h-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-8">
       
       {/* Search */}
       <div className="relative w-80">
@@ -31,7 +31,10 @@ function Header() {
         </div>
 
         {/* Notification */}
-        <button className="text-slate-400 hover:text-white">
+        <button type="button" onClick={onRefresh} disabled={refreshing} title="Refresh analysis" className="text-slate-400 hover:text-white disabled:opacity-50">
+          <RefreshCw size={18} className={refreshing ? "animate-spin" : ""} />
+        </button>
+        <button type="button" title="Notifications" className="text-slate-400 hover:text-white">
           <Bell size={19} />
         </button>
 
@@ -43,10 +46,10 @@ function Header() {
 
           <div className="text-left">
             <p className="text-xs text-white font-medium">
-              TCS.NS
+              {analysis?.ticker || "TCS.NS"}
             </p>
             <p className="text-[10px] text-slate-500">
-              Tata Consultancy Services
+              {analysis?.company || "Tata Consultancy Services"}
             </p>
           </div>
 

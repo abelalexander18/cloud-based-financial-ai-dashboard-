@@ -18,7 +18,7 @@ function Sidebar({ activePage, onNavigate }) {
   ];
 
   return (
-    <aside className="w-64 min-h-screen bg-slate-950 border-r border-slate-800 flex flex-col">
+    <aside className="app-sidebar w-64 min-h-screen bg-slate-950 border-r border-slate-800 flex flex-col">
       {/* Logo */}
       <div className="px-6 py-6 border-b border-slate-800">
         <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ function Sidebar({ activePage, onNavigate }) {
               >
                 <Icon size={19} />
 
-                <span>{item.name}</span>
+                <span className="nav-label">{item.name}</span>
               </button>
             );
           })}

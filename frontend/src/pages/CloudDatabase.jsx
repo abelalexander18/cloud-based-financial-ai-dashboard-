@@ -217,8 +217,8 @@ function CloudDatabase() {
               </div>
             </div>
 
-            <span className="text-xs text-slate-500">
-              Planned
+            <span className="text-xs text-emerald-400">
+              Available
             </span>
           </div>
 
@@ -241,8 +241,8 @@ function CloudDatabase() {
               </div>
             </div>
 
-            <span className="text-xs text-slate-500">
-              Planned
+            <span className="text-xs text-emerald-400">
+              Available
             </span>
           </div>
 
@@ -265,8 +265,8 @@ function CloudDatabase() {
               </div>
             </div>
 
-            <span className="text-xs text-slate-500">
-              Planned
+            <span className="text-xs text-emerald-400">
+              Available
             </span>
           </div>
 

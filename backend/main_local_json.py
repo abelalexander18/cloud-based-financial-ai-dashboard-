@@ -1,20 +1,8 @@
-import os
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 
-from cloud.data_repository import (
-    get_company_by_ticker,
-    get_latest_market_data,
-    get_predictions,
-    get_latest_risk_analysis,
-    get_latest_final_analysis,
-    get_sentiment_analysis
-)
-
-load_dotenv()
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+import json
+import os
 
 
 # =========================================================
@@ -34,10 +22,27 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_ORIGIN],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+
+# =========================================================
+# FIND JSON FILE
+# =========================================================
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+DATA_FILE = os.path.join(
+    BASE_DIR,
+    "data",
+    "unified_analysis.json"
 )
 
 
@@ -73,35 +78,23 @@ def health():
 @app.get("/api/analysis/TCS")
 def get_tcs_analysis():
 
+    if not os.path.exists(DATA_FILE):
+
+        raise HTTPException(
+            status_code=404,
+            detail="Analysis data not found. Run unified_analysis.py first."
+        )
+
     try:
 
-        company = get_company_by_ticker("TCS.NS")
+        with open(
+            DATA_FILE,
+            "r"
+        ) as file:
 
-        if not company:
-            raise HTTPException(
-                status_code=404,
-                detail="TCS company not found in cloud database."
-            )
+            analysis = json.load(file)
 
-        company_id = company["id"]
-
-        market = get_latest_market_data(company_id)
-        predictions = get_predictions(company_id, 10)
-        risk = get_latest_risk_analysis(company_id)
-        final_analysis = get_latest_final_analysis(company_id)
-        sentiment = get_sentiment_analysis(company_id, 10)
-
-        return {
-            "company": company,
-            "market": market,
-            "predictions": predictions,
-            "risk": risk,
-            "final_analysis": final_analysis,
-            "sentiment": sentiment
-        }
-
-    except HTTPException:
-        raise
+        return analysis
 
     except Exception as e:
 

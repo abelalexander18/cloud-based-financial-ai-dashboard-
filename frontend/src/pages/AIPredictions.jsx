@@ -14,11 +14,61 @@ import {
   Tooltip,
 } from "recharts";
 
-import { predictionData } from "../data/mockData";
+function AIPredictions({ analysis, status, error, onRetry }) {
+  if (status === "loading") {
+    return (
+      <main className="p-8">
+        <p className="text-slate-400">Loading AI prediction...</p>
+      </main>
+    );
+  }
 
-function AIPredictions() {
-  const priceDifference =
-    predictionData.predictedPrice - predictionData.currentPrice;
+  if (status === "error") {
+    return (
+      <main className="p-8">
+        <p className="text-red-400 mb-4">{error}</p>
+
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white"
+        >
+          Retry
+        </button>
+      </main>
+    );
+  }
+
+  if (!analysis) return null;
+
+  const prediction = analysis.price_prediction;
+  const direction = analysis.direction_prediction;
+
+  const currentPrice = analysis.market.current_price;
+  const predictedPrice = prediction.predicted_next_day_price;
+  const formatPercentage = (value) =>
+    value == null ? "--" : `${(value * 100).toFixed(2)}%`;
+
+  const predictionChange =
+    currentPrice && predictedPrice
+      ? ((predictedPrice - currentPrice) / currentPrice) * 100
+      : 0;
+
+  const history = Array.isArray(analysis.history)
+    ? analysis.history
+        .map((item) => ({
+          date: item.date || item.timestamp,
+          price: item.price ?? item.close_price ?? item.close,
+        }))
+        .filter((item) => item.date && Number.isFinite(Number(item.price)))
+    : [];
+  const forecast = history.length
+    ? [...history, ...(predictedPrice == null ? [] : [{ date: "Next Day", price: predictedPrice }])]
+    : currentPrice == null || predictedPrice == null
+      ? []
+      : [
+          { date: "Today", price: currentPrice },
+          { date: "Next Day", price: predictedPrice },
+        ];
 
   return (
     <main className="p-8">
@@ -55,7 +105,7 @@ function AIPredictions() {
             </p>
 
             <h3 className="text-lg font-semibold text-white">
-              {predictionData.model}
+              {prediction.model || "Random Forest"}
             </h3>
           </div>
 
@@ -65,7 +115,7 @@ function AIPredictions() {
             </p>
 
             <p className="text-lg font-bold text-violet-400">
-              {predictionData.mape}%
+              {prediction.validation_mape == null ? "Not available" : `${prediction.validation_mape}%`}
             </p>
           </div>
 
@@ -75,7 +125,7 @@ function AIPredictions() {
       {/* Prediction metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {/* Current */}
+        {/* Current price */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
 
           <div className="flex items-center gap-2">
@@ -90,14 +140,14 @@ function AIPredictions() {
           </div>
 
           <p className="text-3xl font-bold text-white mt-4">
-            ₹{predictionData.currentPrice.toLocaleString("en-IN", {
+            ₹{currentPrice?.toLocaleString("en-IN", {
               minimumFractionDigits: 2,
             })}
           </p>
 
         </div>
 
-        {/* Predicted */}
+        {/* Predicted price */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
 
           <div className="flex items-center gap-2">
@@ -112,13 +162,15 @@ function AIPredictions() {
           </div>
 
           <p className="text-3xl font-bold text-emerald-400 mt-4">
-            ₹{predictionData.predictedPrice.toLocaleString("en-IN", {
+            ₹{predictedPrice?.toLocaleString("en-IN", {
               minimumFractionDigits: 2,
             })}
           </p>
 
           <p className="text-xs text-emerald-500/70 mt-2">
-            Expected movement: +{predictionData.predictionChange}%
+            Expected movement:{" "}
+            {predictionChange >= 0 ? "+" : ""}
+            {predictionChange.toFixed(2)}%
           </p>
 
         </div>
@@ -138,12 +190,103 @@ function AIPredictions() {
           </div>
 
           <p className="text-3xl font-bold text-white mt-4">
-            {predictionData.mape}%
+            {prediction.validation_mape == null ? "Not available" : `${prediction.validation_mape}%`}
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
             Mean Absolute Percentage Error
           </p>
+
+        </div>
+
+      </div>
+
+      {/* Direction prediction */}
+      <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+
+        <h3 className="text-lg font-semibold text-white">
+          Direction Prediction
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+
+          <div>
+            <p className="text-xs text-slate-500">
+              Predicted Direction
+            </p>
+
+            <p className="text-xl font-bold text-red-400 mt-2">
+              {direction.direction || "--"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-slate-500">
+              Model Confidence
+            </p>
+
+            <p className="text-xl font-bold text-white mt-2">
+              {formatPercentage(direction.confidence)}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-slate-500">
+              Validation Accuracy
+            </p>
+
+            <p className="text-xl font-bold text-white mt-2">
+              {direction.validation_accuracy != null
+                ? formatPercentage(direction.validation_accuracy)
+                : "Not available"}
+            </p>
+          </div>
+
+        </div>
+
+        <div className="mt-6">
+
+          <div className="flex justify-between text-xs text-slate-400 mb-2">
+            <span>Up probability</span>
+
+            <span>
+              {direction.up_probability != null
+                ? formatPercentage(direction.up_probability)
+                : "--"}
+            </span>
+          </div>
+
+          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-400 rounded-full"
+              style={{
+                width: `${(direction.up_probability || 0) * 100}%`,
+              }}
+            />
+          </div>
+
+        </div>
+
+        <div className="mt-4">
+
+          <div className="flex justify-between text-xs text-slate-400 mb-2">
+            <span>Down probability</span>
+
+            <span>
+              {direction.down_probability != null
+                ? formatPercentage(direction.down_probability)
+                : "--"}
+            </span>
+          </div>
+
+          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-red-400 rounded-full"
+              style={{
+                width: `${(direction.down_probability || 0) * 100}%`,
+              }}
+            />
+          </div>
 
         </div>
 
@@ -158,18 +301,24 @@ function AIPredictions() {
           </h3>
 
           <p className="text-sm text-slate-500 mt-1">
-            AI-predicted price movement over the next 5 days
+            AI-predicted price movement for the next trading day
           </p>
         </div>
 
         <div className="w-full h-80">
+
+          {!forecast.length ? (
+            <div className="h-full flex items-center justify-center text-sm text-slate-500">
+              Price forecast data unavailable.
+            </div>
+          ) : (
 
           <ResponsiveContainer
             width="100%"
             height="100%"
           >
             <LineChart
-              data={predictionData.forecast}
+              data={forecast}
               margin={{
                 top: 10,
                 right: 20,
@@ -208,7 +357,7 @@ function AIPredictions() {
                 }}
                 formatter={(value) => [
                   `₹${Number(value).toLocaleString("en-IN")}`,
-                  "Predicted Price",
+                  "Price",
                 ]}
               />
 
@@ -227,6 +376,7 @@ function AIPredictions() {
 
             </LineChart>
           </ResponsiveContainer>
+          )}
 
         </div>
 
@@ -250,11 +400,15 @@ function AIPredictions() {
             </h3>
 
             <p className="text-sm text-slate-400 mt-2 leading-6">
-              The Random Forest model currently indicates an
-              upward price movement. The forecast estimates a
-              change of approximately{" "}
-              {predictionData.predictionChange}% from the current
-              price.
+              The {prediction.model || "Random Forest"} model predicts a{" "}
+              {direction.direction?.toLowerCase() || "neutral"} price movement
+              for the next trading day. The predicted price is ₹
+              {predictedPrice?.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+              })}
+              , representing an expected change of{" "}
+              {predictionChange >= 0 ? "+" : ""}
+              {predictionChange.toFixed(2)}% from the current price.
             </p>
           </div>
 

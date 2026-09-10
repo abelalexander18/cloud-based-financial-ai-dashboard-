@@ -6,9 +6,29 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-import { sentimentData } from "../data/mockData";
+function SentimentPage({ analysis, status, error, onRetry }) {
+  if (status === "loading" && !analysis) return <main className="p-8"><p className="text-slate-400">Loading sentiment analysis...</p></main>;
+  if (status === "error" && !analysis) return <main className="p-8"><p className="text-red-400 mb-4">{error}</p><button onClick={onRetry} className="px-4 py-2 rounded-lg bg-blue-500 text-white">Retry</button></main>;
+  if (!analysis) return null;
 
-function SentimentPage() {
+  const { sentiment, overall } = analysis;
+  const sentimentRecords = Array.isArray(analysis.sentiment_records) ? analysis.sentiment_records : [];
+  const distributionCounts = sentimentRecords.reduce((counts, record) => {
+    const label = String(record.sentiment || record.label || "").toUpperCase();
+    if (label === "POSITIVE") counts.positive += 1;
+    if (label === "NEUTRAL") counts.neutral += 1;
+    if (label === "NEGATIVE") counts.negative += 1;
+    return counts;
+  }, { positive: 0, neutral: 0, negative: 0 });
+  const distributionTotal = sentimentRecords.length;
+  const percentage = (count) => distributionTotal ? Number(((count / distributionTotal) * 100).toFixed(2)) : null;
+  const distribution = {
+    positive: percentage(distributionCounts.positive),
+    neutral: percentage(distributionCounts.neutral),
+    negative: percentage(distributionCounts.negative),
+  };
+  const sources = analysis.news.filter((article) => article.source);
+  const formatScore = (value) => value === null ? "Not available" : Number(value).toFixed(4);
   return (
     <main className="p-8">
       {/* Page Header */}
@@ -36,7 +56,7 @@ function SentimentPage() {
               </p>
 
               <h3 className="text-2xl font-bold text-emerald-400 mt-1">
-                {sentimentData.overall}
+                {sentiment.label || "Not available"}
               </h3>
             </div>
 
@@ -50,18 +70,14 @@ function SentimentPage() {
 
           <div className="flex items-end gap-2 mb-4">
             <span className="text-5xl font-bold text-white">
-              {sentimentData.score}
-            </span>
-
-            <span className="text-slate-500 mb-2">
-              / 100
+              {formatScore(sentiment.score)}
             </span>
           </div>
 
           <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
             <div
               className="h-full bg-emerald-400 rounded-full"
-              style={{ width: `${sentimentData.score}%` }}
+              style={{ width: "0%" }}
             />
           </div>
 
@@ -105,7 +121,7 @@ function SentimentPage() {
                 </div>
 
                 <span className="text-sm font-medium text-emerald-400">
-                  {sentimentData.positive}%
+                  {distribution.positive === null ? "Not available" : `${distribution.positive}%`}
                 </span>
               </div>
 
@@ -113,7 +129,7 @@ function SentimentPage() {
                 <div
                   className="h-full bg-emerald-400 rounded-full"
                   style={{
-                    width: `${sentimentData.positive}%`,
+                    width: `${distribution.positive || 0}%`,
                   }}
                 />
               </div>
@@ -134,7 +150,7 @@ function SentimentPage() {
                 </div>
 
                 <span className="text-sm font-medium text-slate-400">
-                  {sentimentData.neutral}%
+                  {distribution.neutral === null ? "Not available" : `${distribution.neutral}%`}
                 </span>
               </div>
 
@@ -142,7 +158,7 @@ function SentimentPage() {
                 <div
                   className="h-full bg-slate-400 rounded-full"
                   style={{
-                    width: `${sentimentData.neutral}%`,
+                    width: `${distribution.neutral || 0}%`,
                   }}
                 />
               </div>
@@ -163,7 +179,7 @@ function SentimentPage() {
                 </div>
 
                 <span className="text-sm font-medium text-red-400">
-                  {sentimentData.negative}%
+                  {distribution.negative === null ? "Not available" : `${distribution.negative}%`}
                 </span>
               </div>
 
@@ -171,7 +187,7 @@ function SentimentPage() {
                 <div
                   className="h-full bg-red-400 rounded-full"
                   style={{
-                    width: `${sentimentData.negative}%`,
+                    width: `${distribution.negative || 0}%`,
                   }}
                 />
               </div>
@@ -187,7 +203,7 @@ function SentimentPage() {
         </h3>
 
         <p className="text-sm leading-7 text-slate-400">
-          {sentimentData.summary}
+          {overall.insight || "No sentiment summary was provided by the backend."}
         </p>
       </div>
 
@@ -198,9 +214,9 @@ function SentimentPage() {
         </h3>
 
         <div className="space-y-3">
-          {sentimentData.sources.map((source) => (
+          {sources.length ? sources.map((source, index) => (
             <div
-              key={source.name}
+              key={`${source.title || source.name}-${index}`}
               className="flex items-center justify-between p-4 rounded-xl bg-slate-950 border border-slate-800"
             >
               <div className="flex items-center gap-3">
@@ -212,7 +228,7 @@ function SentimentPage() {
                 </div>
 
                 <span className="text-sm text-slate-300">
-                  {source.name}
+                  {source.title || source.name}
                 </span>
               </div>
 
@@ -228,7 +244,7 @@ function SentimentPage() {
                 {source.sentiment}
               </span>
             </div>
-          ))}
+          )) : <p className="text-sm text-slate-500">Sentiment sources unavailable.</p>}
         </div>
       </div>
     </main>

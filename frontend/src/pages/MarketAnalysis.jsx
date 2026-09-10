@@ -5,9 +5,13 @@ import {
   Volume2,
 } from "lucide-react";
 
-import { technicalIndicators } from "../data/mockData";
+function MarketAnalysis({ analysis, status, error, onRetry }) {
+  if (status === "loading" && !analysis) return <main className="p-8"><p className="text-slate-400">Loading market analysis...</p></main>;
+  if (status === "error" && !analysis) return <main className="p-8"><p className="text-red-400 mb-4">{error}</p><button onClick={onRetry} className="px-4 py-2 rounded-lg bg-blue-500 text-white">Retry</button></main>;
+  if (!analysis) return null;
 
-function MarketAnalysis() {
+  const { market } = analysis;
+  const format = (value, options) => value === null ? "Not available" : Number(value).toLocaleString("en-IN", options);
   return (
     <main className="p-8">
 
@@ -42,7 +46,7 @@ function MarketAnalysis() {
           </div>
 
           <p className="text-2xl font-bold text-white mt-4">
-            {technicalIndicators.rsi}
+            {format(market.rsi, { maximumFractionDigits: 2 })}
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
@@ -63,11 +67,11 @@ function MarketAnalysis() {
           </div>
 
           <p className="text-2xl font-bold text-white mt-4">
-            {technicalIndicators.macd}
+            {format(market.macd, { maximumFractionDigits: 2 })}
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
-            Signal: {technicalIndicators.macdSignal}
+            Signal: {format(market.macd_signal, { maximumFractionDigits: 2 })}
           </p>
         </div>
 
@@ -84,7 +88,7 @@ function MarketAnalysis() {
           </div>
 
           <p className="text-2xl font-bold text-white mt-4">
-            {technicalIndicators.volatility}%
+            {market.volatility === null ? "Not available" : `${market.volatility}%`}
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
@@ -105,7 +109,7 @@ function MarketAnalysis() {
           </div>
 
           <p className="text-2xl font-bold text-white mt-4">
-            {technicalIndicators.volume.toLocaleString("en-IN")}
+            {format(market.volume)}
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
@@ -134,7 +138,7 @@ function MarketAnalysis() {
             </p>
 
             <p className="text-xl font-semibold text-white mt-2">
-              ₹{technicalIndicators.ma7.toLocaleString("en-IN")}
+              {market.ma_7 === null ? "Not available" : `₹${format(market.ma_7)}`}
             </p>
           </div>
 
@@ -144,7 +148,7 @@ function MarketAnalysis() {
             </p>
 
             <p className="text-xl font-semibold text-white mt-2">
-              ₹{technicalIndicators.ma30.toLocaleString("en-IN")}
+              {market.ma_30 === null ? "Not available" : `₹${format(market.ma_30)}`}
             </p>
           </div>
 
@@ -154,7 +158,7 @@ function MarketAnalysis() {
             </p>
 
             <p className="text-xl font-semibold text-white mt-2">
-              ₹{technicalIndicators.ema12.toLocaleString("en-IN")}
+              {market.ema_12 === null ? "Not available" : `₹${format(market.ema_12)}`}
             </p>
           </div>
 
@@ -164,7 +168,7 @@ function MarketAnalysis() {
             </p>
 
             <p className="text-xl font-semibold text-white mt-2">
-              ₹{technicalIndicators.ema26.toLocaleString("en-IN")}
+              {market.ema_26 === null ? "Not available" : `₹${format(market.ema_26)}`}
             </p>
           </div>
 

@@ -7,15 +7,23 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-import { riskData } from "../data/mockData";
+function RiskAnalysisPage({ analysis, status, error, onRetry }) {
+  if (status === "loading" && !analysis) return <main className="p-8"><p className="text-slate-400">Loading risk analysis...</p></main>;
+  if (status === "error" && !analysis) return <main className="p-8"><p className="text-red-400 mb-4">{error}</p><button onClick={onRetry} className="px-4 py-2 rounded-lg bg-blue-500 text-white">Retry</button></main>;
+  if (!analysis) return null;
 
-function RiskAnalysisPage() {
+  const { risk, market } = analysis;
+  const riskFactors = [
+    { name: "Overall risk", level: risk.level },
+    { name: "Market trend", level: market.trend },
+    { name: "Momentum", level: market.momentum },
+  ];
   const getRiskIcon = (level) => {
-    if (level === "Low") {
+    if (String(level).toUpperCase() === "LOW") {
       return <CheckCircle size={18} className="text-emerald-400" />;
     }
 
-    if (level === "Medium") {
+    if (String(level).toUpperCase() === "MEDIUM") {
       return <AlertTriangle size={18} className="text-amber-400" />;
     }
 
@@ -23,11 +31,11 @@ function RiskAnalysisPage() {
   };
 
   const getRiskStyle = (level) => {
-    if (level === "Low") {
+    if (String(level).toUpperCase() === "LOW") {
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     }
 
-    if (level === "Medium") {
+    if (String(level).toUpperCase() === "MEDIUM") {
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
     }
 
@@ -62,7 +70,7 @@ function RiskAnalysisPage() {
               </p>
 
               <h3 className="text-2xl font-bold text-white mt-1">
-                {riskData.level}
+                {risk.level || "Not available"}
               </h3>
             </div>
 
@@ -76,7 +84,7 @@ function RiskAnalysisPage() {
 
           <div className="flex items-end gap-2 mb-4">
             <span className="text-5xl font-bold text-white">
-              {riskData.score}
+              {risk.score ?? "Not available"}
             </span>
 
             <span className="text-slate-500 mb-2">
@@ -87,7 +95,7 @@ function RiskAnalysisPage() {
           <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
             <div
               className="h-full bg-amber-400 rounded-full"
-              style={{ width: `${riskData.score}%` }}
+              style={{ width: `${risk.score ?? 0}%` }}
             />
           </div>
 
@@ -112,7 +120,7 @@ function RiskAnalysisPage() {
             </p>
 
             <p className="text-2xl font-bold text-white mt-1">
-              {riskData.volatility}%
+              {market.volatility === null ? "Not available" : `${market.volatility}%`}
             </p>
 
             <p className="text-xs text-slate-500 mt-2">
@@ -133,7 +141,7 @@ function RiskAnalysisPage() {
             </p>
 
             <p className="text-2xl font-bold text-white mt-1">
-              {riskData.maxDrawdown}%
+              Not available
             </p>
 
             <p className="text-xs text-slate-500 mt-2">
@@ -154,7 +162,7 @@ function RiskAnalysisPage() {
             </p>
 
             <p className="text-2xl font-bold text-white mt-1">
-              {riskData.beta}
+              Not available
             </p>
 
             <p className="text-xs text-slate-500 mt-2">
@@ -179,7 +187,7 @@ function RiskAnalysisPage() {
         </div>
 
         <div className="space-y-3">
-          {riskData.factors.map((factor) => (
+          {riskFactors.map((factor) => (
             <div
               key={factor.name}
               className="flex items-center justify-between p-4 rounded-xl bg-slate-950 border border-slate-800"
